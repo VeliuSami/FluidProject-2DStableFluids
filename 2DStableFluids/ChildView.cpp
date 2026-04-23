@@ -206,6 +206,9 @@ void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	leftButton = true;
 	current_point = old_point = point;
+	// Inject immediately so quick clicks still create visible smoke.
+	int index = Find_Cell_Index(point);
+	fluidSolver.density_source[index] = 50. * fluidSolver.h;
 	CWnd::OnLButtonDown(nFlags, point);
 }
 
@@ -238,6 +241,11 @@ void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 	if (leftButton || rightButton) {
 		old_point = current_point;
 		current_point = point;
+	}
+
+	if (leftButton) {
+		int index = Find_Cell_Index(current_point);
+		fluidSolver.density_source[index] = 50. * fluidSolver.h;
 	}
 
 	if (rightButton) {
