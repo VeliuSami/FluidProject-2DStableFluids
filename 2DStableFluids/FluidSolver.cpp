@@ -75,6 +75,17 @@ void CFluidSolver::reset()
 		advected_velocity[i] = vec2(0.,0.);
 	}
 
+	// Seed a visible smoke blob so pressing Z immediately shows animation.
+	int cx = n / 2;
+	int cy = n * 3 / 4;
+	for (int i = cx - 2; i <= cx + 2; i++) {
+		for (int j = cy - 2; j <= cy + 2; j++) {
+			if (i > 0 && i < n-1 && j > 0 && j < n-1) {
+				density[i + j*n] = 1.0;
+			}
+		}
+	}
+
 }
 
 CFluidSolver::~CFluidSolver(void)
