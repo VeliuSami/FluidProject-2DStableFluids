@@ -175,6 +175,8 @@ void CChildView::OnPaint()
 	MemDC1.TextOutW(8,row,_T("G : Show/Hide Gridlines"));
 	row += 20;
 	MemDC1.TextOutW(8,row,_T("A : One more time step"));
+	row += 20;
+	MemDC1.TextOutW(8,row,_T("Click guide lines as fallback"));
 
 
 	dc.BitBlt(windowSize+1,0,TextWidth,TextHeight,&MemDC1,0,0,NOTSRCCOPY);
@@ -201,6 +203,37 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
+	// Clickable fallback controls on the right guide panel.
+	if (point.x > windowSize) {
+		int y = point.y;
+		if (y >= 46 && y < 66) { // Z : Start Animation
+			if (m_timer) {
+				KillTimer(m_timer);
+				m_timer = 0;
+			} else {
+				m_timer = SetTimer(1, 25, NULL);
+			}
+		} else if (y >= 106 && y < 126) { // R : Reset
+			fluidSolver.reset();
+		} else if (y >= 126 && y < 146) { // V : Show/Hide Velocity
+			showVelocity = !showVelocity;
+		} else if (y >= 146 && y < 166) { // D : Show/Hide Density
+			showDensity = !showDensity;
+		} else if (y >= 166 && y < 186) { // G : Show/Hide Gridlines
+			showGrid = !showGrid;
+		} else if (y >= 186 && y < 206) { // A : One more time step
+			fluidSolver.update();
+		} else if (y >= 66 && y < 86) { // Left button line fallback: inject smoke
+			int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+			fluidSolver.density_source[center] += 80. * fluidSolver.h;
+		} else if (y >= 86 && y < 106) { // Right button line fallback: stir fluid
+			int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+			fluidSolver.velocity_source[center].x += 20.;
+		}
+		Invalidate(false);
+		CWnd::OnLButtonDown(nFlags, point);
+		return;
+	}
 	leftButton = true;
 	current_point = old_point = point;
 	// Inject immediately so quick clicks still create visible smoke.
