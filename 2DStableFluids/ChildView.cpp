@@ -21,6 +21,7 @@ CChildView::CChildView()
 	showVelocity = false;
 	showGrid = false;
 	m_timer = 0;
+	simulationSteps = 0;
 	leftButton = false;
 	rightButton = false;
 }
@@ -31,6 +32,7 @@ CChildView::~CChildView()
 
 
 BEGIN_MESSAGE_MAP(CChildView, CWnd)
+	ON_WM_CREATE()
 	ON_WM_PAINT()
 	ON_WM_TIMER()
 	ON_WM_LBUTTONDOWN()
@@ -157,9 +159,11 @@ void CChildView::OnPaint()
 	MemDC1.TextOutW(3,10,s2);
 	s2.Format(_T("viscosity = %.3f"), fluidSolver.viscosity_coef);
 	MemDC1.TextOutW(3,22,s2);
+	s2.Format(_T("running = %s, steps = %d"), m_timer ? _T("yes") : _T("no"), simulationSteps);
+	MemDC1.TextOutW(3,34,s2);
 
 	MemDC1.SetTextColor(RGB(255,255,255));
-	int row = 35;
+	int row = 55;
 	MemDC1.TextOutW(3,row,_T("User Interface Guide:"));
 	row += 20;
 	MemDC1.TextOutW(8,row,_T("Z : Start Animation"));
@@ -200,9 +204,23 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	fluidSolver.update();
+	simulationSteps++;
 
 	Invalidate(false);
 	CWnd::OnTimer(nIDEvent);
+}
+
+int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CWnd::OnCreate(lpCreateStruct) == -1) {
+		return -1;
+	}
+
+	// Auto-start simulation so animation does not rely on a key press.
+	if (!m_timer) {
+		m_timer = SetTimer(1, 25, NULL);
+	}
+	return 0;
 }
 
 
@@ -270,6 +288,8 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case 'a':
 	case 'A':
 		fluidSolver.update();
+		simulationSteps++;
+		Invalidate(false);
 		break;
 	case 'Z':
 	case 'z':
@@ -285,6 +305,7 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case 'r':
 	case 'R':
 		fluidSolver.reset();
+		simulationSteps = 0;
 		Invalidate(false);
 		break;
 	case 'D':

@@ -19,6 +19,7 @@ public:
 	int windowSize;			//region for fluid rendering
 	int dx;					//grid interval size
 	int m_timer;
+	int simulationSteps;
 
 	//Display options
 	bool showDensity;
@@ -50,6 +51,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
