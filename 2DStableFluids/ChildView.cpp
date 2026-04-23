@@ -176,6 +176,8 @@ void CChildView::OnPaint()
 	row += 20;
 	MemDC1.TextOutW(8,row,_T("A : One more time step"));
 	row += 20;
+	MemDC1.TextOutW(8,row,_T("[ / ] : Decrease/Increase viscosity"));
+	row += 20;
 	MemDC1.TextOutW(8,row,_T("Click guide lines as fallback"));
 
 
@@ -330,6 +332,16 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case 'g':
 		showGrid = !showGrid;
 		InvalidateRect(NULL,FALSE);
+		break;
+	case VK_OEM_4: // [
+	case VK_OEM_MINUS: // fallback
+		fluidSolver.decrease_viscosity();
+		Invalidate(false);
+		break;
+	case VK_OEM_6: // ]
+	case VK_OEM_PLUS: // fallback
+		fluidSolver.increase_viscosity();
+		Invalidate(false);
 		break;
 	}
 
