@@ -155,6 +155,8 @@ void CChildView::OnPaint()
 	s2.Format(_T("%d"),grid_number);
 	s2 = s1+s2;
 	MemDC1.TextOutW(3,10,s2);
+	s2.Format(_T("viscosity = %.3f"), fluidSolver.viscosity_coef);
+	MemDC1.TextOutW(3,22,s2);
 
 	MemDC1.SetTextColor(RGB(255,255,255));
 	int row = 35;
@@ -288,11 +290,15 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		showGrid = !showGrid;
 		InvalidateRect(NULL,FALSE);
 		break;
-	case ']':
+	case VK_OEM_6: // ] on US keyboard
+	case VK_OEM_PLUS: // =/+ as fallback
 		fluidSolver.increase_viscosity();
+		Invalidate(false);
 		break;
-	case '[':
+	case VK_OEM_4: // [ on US keyboard
+	case VK_OEM_MINUS: // -/_ as fallback
 		fluidSolver.decrease_viscosity();
+		Invalidate(false);
 		break;
 	}
 
