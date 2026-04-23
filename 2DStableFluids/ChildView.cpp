@@ -187,6 +187,8 @@ void CChildView::OnPaint()
 	MemDC1.TextOutW(8,row,_T("S : Inject smoke at center"));
 	row += 20;
 	MemDC1.TextOutW(8,row,_T("Arrows: Stir from center"));
+	row += 20;
+	MemDC1.TextOutW(8,row,_T("Tip: click these lines if keys fail"));
 
 
 	dc.BitBlt(windowSize+1,0,TextWidth,TextHeight,&MemDC1,0,0,NOTSRCCOPY);
@@ -227,6 +229,49 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
+	// Clickable fallback controls on the right panel (for VM keyboard issues).
+	if (point.x > windowSize) {
+		int y = point.y;
+		if (y >= 66 && y < 86) { // Start/Stop animation
+			if (m_timer) {
+				KillTimer(m_timer);
+				m_timer = 0;
+			} else {
+				m_timer = SetTimer(1, 25, NULL);
+			}
+		} else if (y >= 126 && y < 146) { // Reset
+			fluidSolver.reset();
+			simulationSteps = 0;
+		} else if (y >= 146 && y < 166) { // Toggle velocity
+			showVelocity = !showVelocity;
+		} else if (y >= 166 && y < 186) { // Toggle density
+			showDensity = !showDensity;
+		} else if (y >= 186 && y < 206) { // Toggle grid
+			showGrid = !showGrid;
+		} else if (y >= 206 && y < 226) { // One step
+			fluidSolver.update();
+			simulationSteps++;
+		} else if (y >= 226 && y < 246) { // Viscosity control
+			if (point.x < windowSize + 125) {
+				fluidSolver.decrease_viscosity();
+			} else {
+				fluidSolver.increase_viscosity();
+			}
+		} else if (y >= 246 && y < 266) { // Inject smoke at center
+			int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+			fluidSolver.density_source[center] += 80. * fluidSolver.h;
+		} else if (y >= 266 && y < 286) { // Stir center (left/right)
+			int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+			if (point.x < windowSize + 125) {
+				fluidSolver.velocity_source[center].x -= 20.;
+			} else {
+				fluidSolver.velocity_source[center].x += 20.;
+			}
+		}
+		Invalidate(false);
+		CWnd::OnLButtonDown(nFlags, point);
+		return;
+	}
 	leftButton = true;
 	current_point = old_point = point;
 	// Inject immediately so quick clicks still create visible smoke.
