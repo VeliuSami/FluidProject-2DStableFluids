@@ -179,6 +179,10 @@ void CChildView::OnPaint()
 	MemDC1.TextOutW(8,row,_T("A : One more time step"));
 	row += 20;
 	MemDC1.TextOutW(8,row,_T("[ / ] : Decrease/Increase viscosity"));
+	row += 20;
+	MemDC1.TextOutW(8,row,_T("S : Inject smoke at center"));
+	row += 20;
+	MemDC1.TextOutW(8,row,_T("Arrows: Stir from center"));
 
 
 	dc.BitBlt(windowSize+1,0,TextWidth,TextHeight,&MemDC1,0,0,NOTSRCCOPY);
@@ -308,6 +312,42 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		fluidSolver.decrease_viscosity();
 		Invalidate(false);
 		break;
+	case 'S':
+	case 's':
+	{
+		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+		fluidSolver.density_source[center] += 80. * fluidSolver.h;
+		Invalidate(false);
+		break;
+	}
+	case VK_UP:
+	{
+		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+		fluidSolver.velocity_source[center].y -= 20.;
+		Invalidate(false);
+		break;
+	}
+	case VK_DOWN:
+	{
+		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+		fluidSolver.velocity_source[center].y += 20.;
+		Invalidate(false);
+		break;
+	}
+	case VK_LEFT:
+	{
+		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+		fluidSolver.velocity_source[center].x -= 20.;
+		Invalidate(false);
+		break;
+	}
+	case VK_RIGHT:
+	{
+		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
+		fluidSolver.velocity_source[center].x += 20.;
+		Invalidate(false);
+		break;
+	}
 	}
 
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
