@@ -22,6 +22,7 @@ const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
 	ON_WM_SETFOCUS()
+	ON_WM_KEYDOWN()
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
 	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnApplicationLook)
@@ -215,6 +216,34 @@ void CMainFrame::OnSetFocus(CWnd* /*pOldWnd*/)
 {
 	// forward focus to the view window
 	m_wndView.SetFocus();
+}
+
+void CMainFrame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	if (::IsWindow(m_wndView.GetSafeHwnd()))
+	{
+		switch (nChar)
+		{
+		case 'A':
+		case 'D':
+		case 'G':
+		case 'R':
+		case 'S':
+		case 'V':
+		case 'Z':
+		case VK_UP:
+		case VK_DOWN:
+		case VK_LEFT:
+		case VK_RIGHT:
+		case VK_OEM_4:
+		case VK_OEM_6:
+		case VK_OEM_MINUS:
+		case VK_OEM_PLUS:
+			m_wndView.SendMessage(WM_KEYDOWN, nChar, MAKELPARAM(nRepCnt, nFlags));
+			return;
+		}
+	}
+	CFrameWndEx::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 BOOL CMainFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo)

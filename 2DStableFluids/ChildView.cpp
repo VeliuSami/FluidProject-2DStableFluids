@@ -226,6 +226,7 @@ int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	SetFocus();
 	leftButton = true;
 	current_point = old_point = point;
 	// Inject immediately so quick clicks still create visible smoke.
@@ -244,6 +245,7 @@ void CChildView::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CChildView::OnRButtonDown(UINT nFlags, CPoint point)
 {
+	SetFocus();
 	rightButton = true;
 	current_point = old_point = point;
 	CWnd::OnRButtonDown(nFlags, point);
@@ -260,6 +262,7 @@ void CChildView::OnRButtonUp(UINT nFlags, CPoint point)
 
 void CChildView::OnMouseMove(UINT nFlags, CPoint point)
 {
+	SetFocus();
 	if (leftButton || rightButton) {
 		old_point = current_point;
 		current_point = point;
