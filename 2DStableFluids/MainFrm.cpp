@@ -177,13 +177,8 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 		case 'D':
 		case 'G':
 		case 'R':
-		case 'S':
 		case 'V':
 		case 'Z':
-		case VK_UP:
-		case VK_DOWN:
-		case VK_LEFT:
-		case VK_RIGHT:
 		case VK_OEM_4:
 		case VK_OEM_6:
 		case VK_OEM_MINUS:
@@ -228,13 +223,8 @@ void CMainFrame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		case 'D':
 		case 'G':
 		case 'R':
-		case 'S':
 		case 'V':
 		case 'Z':
-		case VK_UP:
-		case VK_DOWN:
-		case VK_LEFT:
-		case VK_RIGHT:
 		case VK_OEM_4:
 		case VK_OEM_6:
 		case VK_OEM_MINUS:

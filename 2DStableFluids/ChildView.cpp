@@ -225,6 +225,12 @@ void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 			showGrid = !showGrid;
 		} else if (y >= 186 && y < 206) { // A : One more time step
 			fluidSolver.update();
+		} else if (y >= 206 && y < 226) { // [ / ] : viscosity
+			if (point.x < windowSize + 125) {
+				fluidSolver.decrease_viscosity();
+			} else {
+				fluidSolver.increase_viscosity();
+			}
 		} else if (y >= 66 && y < 86) { // Left button line fallback: inject smoke
 			int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
 			fluidSolver.density_source[center] += 80. * fluidSolver.h;
