@@ -21,7 +21,6 @@ CChildView::CChildView()
 	showVelocity = false;
 	showGrid = false;
 	m_timer = 0;
-	simulationSteps = 0;
 	leftButton = false;
 	rightButton = false;
 }
@@ -32,7 +31,6 @@ CChildView::~CChildView()
 
 
 BEGIN_MESSAGE_MAP(CChildView, CWnd)
-	ON_WM_CREATE()
 	ON_WM_PAINT()
 	ON_WM_TIMER()
 	ON_WM_LBUTTONDOWN()
@@ -157,13 +155,9 @@ void CChildView::OnPaint()
 	s2.Format(_T("%d"),grid_number);
 	s2 = s1+s2;
 	MemDC1.TextOutW(3,10,s2);
-	s2.Format(_T("viscosity = %.3f"), fluidSolver.viscosity_coef);
-	MemDC1.TextOutW(3,22,s2);
-	s2.Format(_T("running = %s, steps = %d"), m_timer ? _T("yes") : _T("no"), simulationSteps);
-	MemDC1.TextOutW(3,34,s2);
 
 	MemDC1.SetTextColor(RGB(255,255,255));
-	int row = 55;
+	int row = 35;
 	MemDC1.TextOutW(3,row,_T("User Interface Guide:"));
 	row += 20;
 	MemDC1.TextOutW(8,row,_T("Z : Start Animation"));
@@ -181,14 +175,6 @@ void CChildView::OnPaint()
 	MemDC1.TextOutW(8,row,_T("G : Show/Hide Gridlines"));
 	row += 20;
 	MemDC1.TextOutW(8,row,_T("A : One more time step"));
-	row += 20;
-	MemDC1.TextOutW(8,row,_T("[ / ] : Decrease/Increase viscosity"));
-	row += 20;
-	MemDC1.TextOutW(8,row,_T("S : Inject smoke at center"));
-	row += 20;
-	MemDC1.TextOutW(8,row,_T("Arrows: Stir from center"));
-	row += 20;
-	MemDC1.TextOutW(8,row,_T("Tip: click these lines if keys fail"));
 
 
 	dc.BitBlt(windowSize+1,0,TextWidth,TextHeight,&MemDC1,0,0,NOTSRCCOPY);
@@ -206,72 +192,15 @@ void CChildView::OnTimer(UINT_PTR nIDEvent)
 	}
 
 	fluidSolver.update();
-	simulationSteps++;
 
 	Invalidate(false);
 	CWnd::OnTimer(nIDEvent);
-}
-
-int CChildView::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
-	if (CWnd::OnCreate(lpCreateStruct) == -1) {
-		return -1;
-	}
-
-	// Auto-start simulation so animation does not rely on a key press.
-	if (!m_timer) {
-		m_timer = SetTimer(1, 25, NULL);
-	}
-	return 0;
 }
 
 
 void CChildView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	SetFocus();
-	// Clickable fallback controls on the right panel (for VM keyboard issues).
-	if (point.x > windowSize) {
-		int y = point.y;
-		if (y >= 66 && y < 86) { // Start/Stop animation
-			if (m_timer) {
-				KillTimer(m_timer);
-				m_timer = 0;
-			} else {
-				m_timer = SetTimer(1, 25, NULL);
-			}
-		} else if (y >= 126 && y < 146) { // Reset
-			fluidSolver.reset();
-			simulationSteps = 0;
-		} else if (y >= 146 && y < 166) { // Toggle velocity
-			showVelocity = !showVelocity;
-		} else if (y >= 166 && y < 186) { // Toggle density
-			showDensity = !showDensity;
-		} else if (y >= 186 && y < 206) { // Toggle grid
-			showGrid = !showGrid;
-		} else if (y >= 206 && y < 226) { // One step
-			fluidSolver.update();
-			simulationSteps++;
-		} else if (y >= 226 && y < 246) { // Viscosity control
-			if (point.x < windowSize + 125) {
-				fluidSolver.decrease_viscosity();
-			} else {
-				fluidSolver.increase_viscosity();
-			}
-		} else if (y >= 246 && y < 266) { // Inject smoke at center
-			int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
-			fluidSolver.density_source[center] += 80. * fluidSolver.h;
-		} else if (y >= 266 && y < 286) { // Stir center (left/right)
-			int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
-			if (point.x < windowSize + 125) {
-				fluidSolver.velocity_source[center].x -= 20.;
-			} else {
-				fluidSolver.velocity_source[center].x += 20.;
-			}
-		}
-		Invalidate(false);
-		CWnd::OnLButtonDown(nFlags, point);
-		return;
-	}
 	leftButton = true;
 	current_point = old_point = point;
 	// Inject immediately so quick clicks still create visible smoke.
@@ -336,7 +265,6 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case 'a':
 	case 'A':
 		fluidSolver.update();
-		simulationSteps++;
 		Invalidate(false);
 		break;
 	case 'Z':
@@ -353,7 +281,6 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case 'r':
 	case 'R':
 		fluidSolver.reset();
-		simulationSteps = 0;
 		Invalidate(false);
 		break;
 	case 'D':
@@ -371,52 +298,6 @@ void CChildView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		showGrid = !showGrid;
 		InvalidateRect(NULL,FALSE);
 		break;
-	case VK_OEM_6: // ] on US keyboard
-	case VK_OEM_PLUS: // =/+ as fallback
-		fluidSolver.increase_viscosity();
-		Invalidate(false);
-		break;
-	case VK_OEM_4: // [ on US keyboard
-	case VK_OEM_MINUS: // -/_ as fallback
-		fluidSolver.decrease_viscosity();
-		Invalidate(false);
-		break;
-	case 'S':
-	case 's':
-	{
-		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
-		fluidSolver.density_source[center] += 80. * fluidSolver.h;
-		Invalidate(false);
-		break;
-	}
-	case VK_UP:
-	{
-		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
-		fluidSolver.velocity_source[center].y -= 20.;
-		Invalidate(false);
-		break;
-	}
-	case VK_DOWN:
-	{
-		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
-		fluidSolver.velocity_source[center].y += 20.;
-		Invalidate(false);
-		break;
-	}
-	case VK_LEFT:
-	{
-		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
-		fluidSolver.velocity_source[center].x -= 20.;
-		Invalidate(false);
-		break;
-	}
-	case VK_RIGHT:
-	{
-		int center = (fluidSolver.n/2) + fluidSolver.n * (fluidSolver.n/2);
-		fluidSolver.velocity_source[center].x += 20.;
-		Invalidate(false);
-		break;
-	}
 	}
 
 	CWnd::OnKeyDown(nChar, nRepCnt, nFlags);
