@@ -166,6 +166,34 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
+BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg != NULL && pMsg->message == WM_KEYDOWN && ::IsWindow(m_wndView.GetSafeHwnd()))
+	{
+		switch (pMsg->wParam)
+		{
+		case 'A':
+		case 'D':
+		case 'G':
+		case 'R':
+		case 'S':
+		case 'V':
+		case 'Z':
+		case VK_UP:
+		case VK_DOWN:
+		case VK_LEFT:
+		case VK_RIGHT:
+		case VK_OEM_4:
+		case VK_OEM_6:
+		case VK_OEM_MINUS:
+		case VK_OEM_PLUS:
+			m_wndView.SendMessage(WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
+			return TRUE;
+		}
+	}
+	return CFrameWndEx::PreTranslateMessage(pMsg);
+}
+
 // CMainFrame diagnostics
 
 #ifdef _DEBUG
