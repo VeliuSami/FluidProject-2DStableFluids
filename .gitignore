@@ -12,3 +12,4 @@ project2grade.doc/
 
 grading.txt # replace with your actual grading filename
 *.zip
+*.doc
