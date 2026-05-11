@@ -1,18 +1,18 @@
 
-# 💧 FluidProject — 2D Stable Fluids
+#  FluidProject — 2D Stable Fluids
 
 A real-time interactive 2D fluid simulation built on **Jos Stam's Stable Fluids** algorithm (SIGGRAPH 1999). The solver is unconditionally stable, allowing large timesteps while producing physically plausible smoke/dye advection, velocity diffusion, and pressure projection — all running in real time.
 
 ***
 
-## 📸 Demo
+## Demo
 
 > _Add a GIF or screenshot of the simulation here._
 > Example: `![Fluid Simulation Demo](demo.gif)`
 
 ***
 
-## 🧠 Algorithm Overview
+##  Algorithm Overview
 
 The simulation solves the **incompressible Navier-Stokes equations** on a uniform 2D grid using Stam's operator-splitting approach:
 
@@ -38,7 +38,7 @@ Where:
 
 ***
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -65,7 +65,7 @@ g++ -std=c++17 -o FluidProject main.cpp -lGL -lGLFW -lGLEW
 
 ***
 
-## 🎮 Controls
+##  Controls
 
 | Input | Action |
 |-------|--------|
@@ -81,7 +81,7 @@ g++ -std=c++17 -o FluidProject main.cpp -lGL -lGLFW -lGLEW
 
 ***
 
-## ⚙️ Parameters
+## ️ Parameters
 
 These can be tweaked in `config.h` or at the top of `main.cpp`:
 
@@ -95,7 +95,7 @@ These can be tweaked in `config.h` or at the top of `main.cpp`:
 
 ***
 
-## 🙈 Hiding Files from Git
+##  Hiding Files from Git
 
 To hide (exclude) any file from being tracked by Git, add it to `.gitignore`.
 
@@ -176,7 +176,7 @@ config/secrets.h
 
 ***
 
-## 📚 References
+##  References
 
 - Jos Stam, [*Stable Fluids*](https://pages.cs.wisc.edu/~chaol/data/cs777/stam-stable_fluids.pdf), SIGGRAPH 1999
 - Mark Harris, [*Fast Fluid Dynamics Simulation on the GPU*](https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu), GPU Gems
@@ -184,7 +184,7 @@ config/secrets.h
 
 ***
 
-## 📄 License
+##  License
 
 MIT License — feel free to use, modify, and distribute.
 
