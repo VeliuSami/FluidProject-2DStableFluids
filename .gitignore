@@ -10,3 +10,5 @@ Release/
 Submission_2DStableFluids/
 project2grade.doc/
 
+grading.txt # replace with your actual grading filename
+*.zip
